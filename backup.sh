@@ -73,7 +73,7 @@ CURRENT=main
 INCREMENTDIR=$(date +%Y-%m-%d)
 
 # Options to pass to rsync
-OPTIONS="--force --ignore-errors --delete \
+OPTIONS="--force --ignore-errors \
  --exclude-from=/backup_excludes \
  --skip-compress=$RSYNC_SKIP_COMPRESS \
  --backup --backup-dir=$ARCHIVEROOT/$INCREMENTDIR \
@@ -91,7 +91,7 @@ do_rsync()
 {
   # ShellCheck: Allow unquoted OPTIONS because it contain spaces
   # shellcheck disable=SC2086
-  rsync ${OPTIONS} -e "ssh -Tx -c aes128-gcm@openssh.com -o Compression=no -i ${SSH_IDENTITY_FILE} -p${SSH_PORT}" "${BACKUPDIR}" "$ARCHIVEROOT/$CURRENT"
+  rsync ${OPTIONS} -e "ssh -i ${SSH_IDENTITY_FILE} -p ${SSH_PORT}" "${BACKUPDIR}" "$ARCHIVEROOT/$CURRENT"
 }
 
 # Our post rsync accounting function

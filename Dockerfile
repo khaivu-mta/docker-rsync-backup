@@ -1,5 +1,4 @@
 FROM alpine:3.6
-MAINTAINER Johan Swetzén <johan@swetzen.com>
 
 ENV REMOTE_HOSTNAME="" \
     BACKUPDIR="/home" \
@@ -9,11 +8,11 @@ ENV REMOTE_HOSTNAME="" \
     EXCLUDES="" \
     CRON_TIME="0 1 * * *"
 
-RUN apk add --no-cache rsync openssh-client
+RUN apk add --no-cache rsync openssh-client bash
 
 COPY docker-entrypoint.sh /usr/local/bin/
 COPY backup.sh /backup.sh
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/usr/local/bin/docker-entrypoint.sh"]
 
-CMD /backup.sh && crond -f
+CMD sh /backup.sh && crond -f

@@ -1,39 +1,28 @@
-# Basic Usage
+# Basic Usage for Raspberry pi 400
 
-Basic backup of `/home` to `/mnt/backup_drive`
+Backup folder `your_username@10.10.10.10:/Volumes` (server) -> `/backup_drive` (local)
+```bash
+docker run -d --name rsync \
+  --volume "/backup_drive":"/backup" \ # replace by your backup folder
+  --volume "/home/your_username/.ssh":"/root/.ssh" \
+  --env REMOTE_HOSTNAME="10.10.10.10" \ # replace by your server ip
+  --env SSH_IDENTITY_FILE="/root/.ssh/id_rsa" \ # private key ssh
+  --env BACKUPDIR="your_username@10.10.10.10:/Volumes" \
+  --env ARCHIVEROOT="/backup" \
+  --env SSH_PORT=22 \
+  --env CRON_TIME="0 */3 * * *" \ # every 3 hours
+  cullen2205/rsync:pi400
+```
 
-    docker run -d --name rsync-backup \
-      --volume /home:/home \
-      --volume /mnt/backup_drive:/backup \
-      jswetzen/rsync-backup
+The container can then be stopped with 
+```bash
+docker stop rsync && docker rm rsync
+```
 
-The container can then be stopped with `docker kill rsync-backup`.
-
-## Supported tags and architectures
-
-For use on a normal machine, use the `latest` tag.
-For ARM computers (like the Raspberry Pi) use `arm32v7`.
-
-# Details
-
-## Handling SSH keys
-
-For remote backup, public key authentication used. SSH keys can be reused from
-the host computer using a mounted volume, or they will be created automatically.
-The generated public key is written to the log shown with `docker logs rsync-backup`.
-
-Example backup of `/home` on `user@remote-server.com` to `/mnt/backup_drive`
-
-    docker run -d --name rsync-backup \
-      --volume /mnt/backup_drive:/backup \
-      --volume /home/hostuser/.ssh:/ssh-keys \
-      --env SSH_IDENTITY_FILE=/ssh-keys/id_rsa \
-      --env BACKUPDIR=user@remote-server.com:/home \
-      jswetzen/rsync-backup
-
-This setup uses the `id_rsa` key found in `/home/hostuser/.ssh/`. It's mounted
-to `/ssh-keys` rather than `/root/.ssh` because ssh stops if it finds a `config`
-file with the wrong owner.
+Log
+```bash
+docker logs -f rsync
+```
 
 ## Environment variables
 

@@ -1,4 +1,11 @@
-# Basic Usage for Raspberry pi 400
+# Before start
+```bash
+- Server installed rsync.
+- Key /home/your_username/.ssh/id_rsa must be remote without password to the server.
+```
+
+
+# Raspberry pi 400
 
 Backup folder `your_username@10.10.10.10:/Volumes` (server) -> `/backup_drive` (local)
 ```bash
